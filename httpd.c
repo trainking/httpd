@@ -29,6 +29,7 @@
 #include <pthread.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include "response.h"
 
 #define ISspace(x) isspace((int)(x))
 
@@ -261,7 +262,8 @@ void execute_cgi(int client, const char *path,
             numchars = get_line(client, buf, sizeof(buf));
         }
         if (content_length == -1) {
-            bad_request(client);
+            // bad_request(client);
+            response_400(client);
             return;
         }
     }
