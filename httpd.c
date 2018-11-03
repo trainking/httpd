@@ -39,7 +39,6 @@
 #define STDERR  2
 
 void accept_request(void *);
-void bad_request(int);
 void cat(int, FILE *);
 void cannot_execute(int);
 void error_die(const char *);
@@ -157,26 +156,6 @@ void accept_request(void *arg)
     close(client);
 }
 
-/**********************************************************************/
-/* Inform the client that a request it has made has a problem.
- * Parameters: client socket */
-/**********************************************************************/
-// 错误的相应消息
-void bad_request(int client)
-{
-    char buf[1024];
-
-    sprintf(buf, "HTTP/1.0 400 BAD REQUEST\r\n");
-    send(client, buf, sizeof(buf), 0);
-    sprintf(buf, "Content-type: text/html\r\n");
-    send(client, buf, sizeof(buf), 0);
-    sprintf(buf, "\r\n");
-    send(client, buf, sizeof(buf), 0);
-    sprintf(buf, "<P>Your browser sent a bad request, ");
-    send(client, buf, sizeof(buf), 0);
-    sprintf(buf, "such as a POST without a Content-Length.\r\n");
-    send(client, buf, sizeof(buf), 0);
-}
 
 /**********************************************************************/
 /* Put the entire contents of a file out on a socket.  This function
@@ -262,7 +241,6 @@ void execute_cgi(int client, const char *path,
             numchars = get_line(client, buf, sizeof(buf));
         }
         if (content_length == -1) {
-            // bad_request(client);
             response_400(client);
             return;
         }
