@@ -40,7 +40,6 @@
 
 void accept_request(void *);
 void cat(int, FILE *);
-void cannot_execute(int);
 void error_die(const char *);
 void execute_cgi(int, const char *, const char *, const char *);
 int get_line(int, char *, int);
@@ -48,7 +47,6 @@ void headers(int, const char *);
 void not_found(int);
 void serve_file(int, const char *);
 int startup(u_short *);
-void unimplemented(int);
 
 /**********************************************************************/
 /* A request has caused a call to accept() on the server port to
@@ -90,7 +88,7 @@ void accept_request(void *arg)
     /**这里利用strcasecmp的特性 ，如果两个参数相等，则返回0，否则会比较，如果第一个参数比第二参数大，则返回大于0的数，反之则返回小于0的数**/
     if (strcasecmp(method, "GET") && strcasecmp(method, "POST"))
     {
-        unimplemented(client);
+        response_unimplemented(client);
         return;
     }
 
@@ -177,24 +175,6 @@ void cat(int client, FILE *resource)
 }
 
 /**********************************************************************/
-/* Inform the client that a CGI script could not be executed.
- * Parameter: the client socket descriptor. */
-/**********************************************************************/
-void cannot_execute(int client)
-{
-    char buf[1024];
-
-    sprintf(buf, "HTTP/1.0 500 Internal Server Error\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "Content-type: text/html\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "<P>Error prohibited CGI execution.\r\n");
-    send(client, buf, strlen(buf), 0);
-}
-
-/**********************************************************************/
 /* Print out an error message with perror() (for system errors; based
  * on value of errno, which indicates system call errors) and exit the
  * program indicating an error. */
@@ -245,22 +225,38 @@ void execute_cgi(int client, const char *path,
             return;
         }
     }
-    else/*HEAD or other*/
+    else if (strcasecmp(method, "PUT") == 0)
+    {
+        // put 从body中读出数据
+        numchars = get_line(client, buf, sizeof(buf));
+        while ((numchars > 0) && strcmp("\n", buf))
+        {
+            buf[15] = '\0';
+            if (strcasecmp(buf, "Content-Length:") == 0)
+                content_length = atoi(&(buf[16]));
+            numchars = get_line(client, buf, sizeof(buf));
+        }
+        if (content_length == -1) {
+            response_400(client);
+            return;
+        }
+    }
+    else/*TODO 实现其他method*/
     {
     }
 
 
     if (pipe(cgi_output) < 0) {
-        cannot_execute(client);
+        response_500(client);
         return;
     }
     if (pipe(cgi_input) < 0) {
-        cannot_execute(client);
+        response_500(client);
         return;
     }
 
     if ( (pid = fork()) < 0 ) {
-        cannot_execute(client);
+        response_500(client);
         return;
     }
     sprintf(buf, "HTTP/1.0 200 OK\r\n");
@@ -474,34 +470,6 @@ int startup(u_short *port)
     if (listen(httpd, 5) < 0)
         error_die("listen");
     return(httpd);
-}
-
-/**********************************************************************/
-/* Inform the client that the requested web method has not been
- * implemented.
- * Parameter: the client socket */
-/**********************************************************************/
-/**发送方法未实现的报文**/
-void unimplemented(int client)
-{
-    char buf[1024];
-
-    sprintf(buf, "HTTP/1.0 501 Method Not Implemented\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, SERVER_STRING);
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "Content-Type: text/html\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "<HTML><HEAD><TITLE>Method Not Implemented\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "</TITLE></HEAD>\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "<BODY><P>HTTP request method not supported.\r\n");
-    send(client, buf, strlen(buf), 0);
-    sprintf(buf, "</BODY></HTML>\r\n");
-    send(client, buf, strlen(buf), 0);
 }
 
 /**********************************************************************/
