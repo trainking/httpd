@@ -38,6 +38,13 @@
 #define STDOUT  1
 #define STDERR  2
 
+#define METHOD_GET   "GET"
+#define METHOD_POST  "POST"
+#define METHOD_PUT   "PUT"
+#define METHOD_HEAD  "HEAD"
+#define METHOD_OPTIONS  "OPTIONS"
+#define METHOD_PATCH "PATCH"
+
 void accept_request(void *);
 void cat(int, FILE *);
 void error_die(const char *);
