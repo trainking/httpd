@@ -86,7 +86,7 @@ void accept_request(void *arg)
     /**strcasecmp判断字符串相等**/
     /**这步骤应该是用来判断方法是否实现的，但是使用&&符号，第一眼看过去会觉得懵逼，这个短路的特性会不能实现**/
     /**这里利用strcasecmp的特性 ，如果两个参数相等，则返回0，否则会比较，如果第一个参数比第二参数大，则返回大于0的数，反之则返回小于0的数**/
-    if (strcasecmp(method, "GET") && strcasecmp(method, "POST"))
+    if (strcasecmp(method, "GET") && strcasecmp(method, "POST") && strcasecmp(method, "PUT"))
     {
         response_unimplemented(client);
         return;
