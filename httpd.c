@@ -93,13 +93,13 @@ void accept_request(void *arg)
     /**strcasecmp判断字符串相等**/
     /**这步骤应该是用来判断方法是否实现的，但是使用&&符号，第一眼看过去会觉得懵逼，这个短路的特性会不能实现**/
     /**这里利用strcasecmp的特性 ，如果两个参数相等，则返回0，否则会比较，如果第一个参数比第二参数大，则返回大于0的数，反之则返回小于0的数**/
-    if (strcasecmp(method, "GET") && strcasecmp(method, "POST") && strcasecmp(method, "PUT"))
+    if (strcasecmp(method, METHOD_GET) && strcasecmp(method, METHOD_POST) && strcasecmp(method, METHOD_PUT))
     {
         response_unimplemented(client);
         return;
     }
 
-    if (strcasecmp(method, "POST") == 0)
+    if (strcasecmp(method, METHOD_POST) == 0)
         cgi = 1;
 
     i = 0;
@@ -113,7 +113,7 @@ void accept_request(void *arg)
     // 在URL的最后加上一个\0用来判断
     url[i] = '\0';
 
-    if (strcasecmp(method, "GET") == 0)
+    if (strcasecmp(method, METHOD_GET) == 0)
     {
         // 通过指针来便利数组
         query_string = url;
@@ -213,10 +213,10 @@ void execute_cgi(int client, const char *path,
     int content_length = -1;
 
     buf[0] = 'A'; buf[1] = '\0';
-    if (strcasecmp(method, "GET") == 0)
+    if (strcasecmp(method, METHOD_GET) == 0)
         while ((numchars > 0) && strcmp("\n", buf))  /* read & discard headers */
             numchars = get_line(client, buf, sizeof(buf));
-    else if (strcasecmp(method, "POST") == 0) /*POST*/
+    else if (strcasecmp(method, METHOD_POST) == 0) /*POST*/
     {
         // post 请求从body中读出数据
         numchars = get_line(client, buf, sizeof(buf));
@@ -232,7 +232,7 @@ void execute_cgi(int client, const char *path,
             return;
         }
     }
-    else if (strcasecmp(method, "PUT") == 0)
+    else if (strcasecmp(method, METHOD_PUT) == 0)
     {
         // put 从body中读出数据
         numchars = get_line(client, buf, sizeof(buf));
@@ -280,7 +280,7 @@ void execute_cgi(int client, const char *path,
         close(cgi_input[1]);
         sprintf(meth_env, "REQUEST_METHOD=%s", method);
         putenv(meth_env);
-        if (strcasecmp(method, "GET") == 0) {
+        if (strcasecmp(method, METHOD_GET) == 0) {
             sprintf(query_env, "QUERY_STRING=%s", query_string);
             putenv(query_env);
         }
@@ -293,7 +293,7 @@ void execute_cgi(int client, const char *path,
     } else {    /* parent */
         close(cgi_output[1]);
         close(cgi_input[0]);
-        if (strcasecmp(method, "POST") == 0)
+        if (strcasecmp(method, METHOD_POST) == 0)
             for (i = 0; i < content_length; i++) {
                 recv(client, &c, 1, 0);
                 write(cgi_input[1], &c, 1);
