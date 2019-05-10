@@ -1,6 +1,8 @@
-# include<stdio.h>
+#include <stdio.h>
 #include <strings.h>
 #include <string.h>
+
+#define SERVER_STRING "Server: jdbhttpd/0.1.0\r\n"
 
 /**
 * 500
