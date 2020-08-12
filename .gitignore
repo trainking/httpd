@@ -1,3 +1,5 @@
 httpd
 
+*.out
+
 .vscode/
