@@ -65,10 +65,24 @@ int main(void)
 {
     u_short port = 4000;   // 服务器监听端口
     int server_sock = -1;  // 服务器socket, 初始值为-1，区分返回结果的非0描述符
+    int client_sock = -1;  // 获取的客户端socket描述符
     struct sockaddr_in client_name;   // 接收客户端协议等信息
+    char buff[1024];   // 请求缓存区
     socklen_t client_name_len = sizeof(client_name);
     // 1. 建立服务器socket
     server_sock = startup(&port);
     printf("*************************\n  httpd running!\n  Listen port%d\n*************************\n", port);
+    // 2. accept
+    while(1) {
+        client_sock = accept(server_sock, (struct sockaddr *)&client_name, &client_name_len);
+        if (client_sock < 0)
+            error_die("accept Fail!");
+        // tcp 的返回
+        snprintf(buff, sizeof(buff), "hell0 %d", client_sock);
+        write(client_sock, buff, strlen(buff));
+        printf("DEBUG: get data--- %s\n", buff);
+        close(client_sock);
+    }
+    close(server_sock);
     return 0;
 }
