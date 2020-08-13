@@ -54,8 +54,8 @@ int startup(u_short *port)
     */
     if (listen(httpd, 5) < 0)
         error_die("listen Fail!");
-    // 4. accept
-    return 0;
+    // 4. accept 外置主函数
+    return (httpd);
 }
 
 /*
@@ -63,7 +63,12 @@ int startup(u_short *port)
 */
 int main(void)
 {
-    u_short port = 4000;
-    startup(&port);
+    u_short port = 4000;   // 服务器监听端口
+    int server_sock = -1;  // 服务器socket, 初始值为-1，区分返回结果的非0描述符
+    struct sockaddr_in client_name;   // 接收客户端协议等信息
+    socklen_t client_name_len = sizeof(client_name);
+    // 1. 建立服务器socket
+    server_sock = startup(&port);
+    printf("*************************\n  httpd running!\n  Listen port%d\n*************************\n", port);
     return 0;
 }
