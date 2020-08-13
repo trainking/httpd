@@ -37,7 +37,23 @@ int startup(u_short *port)
     name.sin_addr.s_addr = htonl(INADDR_ANY);  // 地址，INADDR_ANY = 0.0.0.0
     if (bind(httpd, (struct sockaddr *)&name, sizeof(name)) < 0)  // bind 成功返回0，失败-1
         error_die("bind Fail!");
+    // 2.2 以port=0 bind的地址会动态分配一个端口号，通过getsockname取出来
+    if (*port ==0)
+    {
+        socklen_t name_len = sizeof(name);
+        if (getsockname(httpd, (struct sockaddr *)&name, &name_len) < 0)
+            error_die("getsockname Fail!");
+        // 取出数据是网络序需转换
+        *port = ntohs(name.sin_port);
+    }
     // 3. listen
+    /*
+    * 5 是4.2BSD规定的最大数
+    * 此数是套接字的未完成队列和已完成队列总和
+    * 概念模糊，不同系统有不同实现，不要为0，0在不同系统又特殊含义
+    */
+    if (listen(httpd, 5) < 0)
+        error_die("listen Fail!");
     // 4. accept
     return 0;
 }
