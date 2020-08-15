@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <netinet/in.h>
 #include <string.h>
 
@@ -69,6 +70,8 @@ int main(void)
     struct sockaddr_in client_name;   // 接收客户端协议等信息
     char sendline[1024], recvline[1024];   // 请求缓存区
     socklen_t client_name_len = sizeof(client_name);
+    int maxfpl;     // 最大可读socket+1
+    fd_set rset;    // IO检查读
     // 1. 建立服务器socket
     server_sock = startup(&port);
     printf("*************************\n  httpd running!\n  Listen port%d\n*************************\n", port);
@@ -78,6 +81,10 @@ int main(void)
         if (client_sock < 0)
             error_die("accept Fail!");
 
+        FD_ZERO(&rset);
+        FD_SET(client_sock, &rset);
+        maxfpl = client_sock + 1;
+        select(maxfpl, &rset, NULL, NULL, NULL);
         // 读取客户端发送的数据
         read(client_sock, recvline, sizeof(recvline));
         printf("DEBUG: recv data -- %s\n", recvline);
