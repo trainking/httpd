@@ -5,6 +5,7 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <string.h>
+#include "response.h"
 
 /*函数声明*/
 void error_die(const char *sc);
@@ -91,9 +92,7 @@ int main(void)
 
 
         // tcp 的返回
-        snprintf(sendline, sizeof(sendline), "hell0 %d", client_sock);
-        write(client_sock, sendline, strlen(sendline));
-        printf("DEBUG: send data--- %s\n", sendline);
+        response_200(client_sock, sendline);
         close(client_sock);
     }
     close(server_sock);
