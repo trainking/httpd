@@ -86,10 +86,9 @@ int main(void)
         FD_SET(client_sock, &rset);
         maxfpl = client_sock + 1;
         select(maxfpl, &rset, NULL, NULL, NULL);
-        // 读取客户端发送的数据
+        // TODO 读取客户端发送的数据 解析http报文
         read(client_sock, recvline, sizeof(recvline));
         printf("DEBUG: recv data -- %s\n", recvline);
-
 
         // tcp 的返回
         response_200(client_sock, sendline);
