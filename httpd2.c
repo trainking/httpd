@@ -10,6 +10,7 @@
 /*函数声明*/
 void error_die(const char *sc);
 int startup(u_short *port);
+void accept_request(void *arg);
 
 /*错误退出，输出一条错误信息*/
 void error_die(const char *sc)
@@ -60,6 +61,26 @@ int startup(u_short *port)
     return (httpd);
 }
 
+// 处理请求
+void accept_request(void *arg)
+{
+    int client_sock = *(int*)arg;
+    fd_set rset;    // IO检查读
+    int maxfpl;     // 最大可读socket+1
+    char sendline[1024], recvline[1024];   // 请求缓存区
+    FD_ZERO(&rset);
+    FD_SET(client_sock, &rset);
+    maxfpl = client_sock + 1;
+    select(maxfpl, &rset, NULL, NULL, NULL);
+    // TODO 读取客户端发送的数据 解析http报文
+    read(client_sock, recvline, sizeof(recvline));
+    printf("DEBUG: recv data -- %s\n", recvline);
+
+    // tcp 的返回
+    response_200(client_sock, sendline);
+    close(client_sock);
+}
+
 /*
 * 主入口
 */
@@ -69,10 +90,9 @@ int main(void)
     int server_sock = -1;  // 服务器socket, 初始值为-1，区分返回结果的非0描述符
     int client_sock = -1;  // 获取的客户端socket描述符
     struct sockaddr_in client_name;   // 接收客户端协议等信息
-    char sendline[1024], recvline[1024];   // 请求缓存区
     socklen_t client_name_len = sizeof(client_name);
-    int maxfpl;     // 最大可读socket+1
-    fd_set rset;    // IO检查读
+    pthread_t newthread;
+
     // 1. 建立服务器socket
     server_sock = startup(&port);
     printf("*************************\n  httpd running!\n  Listen port%d\n*************************\n", port);
@@ -82,17 +102,8 @@ int main(void)
         if (client_sock < 0)
             error_die("accept Fail!");
 
-        FD_ZERO(&rset);
-        FD_SET(client_sock, &rset);
-        maxfpl = client_sock + 1;
-        select(maxfpl, &rset, NULL, NULL, NULL);
-        // TODO 读取客户端发送的数据 解析http报文
-        read(client_sock, recvline, sizeof(recvline));
-        printf("DEBUG: recv data -- %s\n", recvline);
-
-        // tcp 的返回
-        response_200(client_sock, sendline);
-        close(client_sock);
+        if (pthread_create(&newthread, NULL, (void *)accept_request, (void *)&client_sock) != 0)
+            perror("pthread_create");
     }
     close(server_sock);
     return 0;
