@@ -5,6 +5,8 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
 #include "response.h"
 
 /*函数声明*/
