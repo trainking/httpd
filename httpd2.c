@@ -76,8 +76,14 @@ void accept_request(void *arg)
     maxfpl = client_sock + 1;
     select(maxfpl, &rset, NULL, NULL, NULL);
     // TODO 读取客户端发送的数据 解析http报文
-    // read(client_sock, recvline, sizeof(recvline));
-    get_line(client_sock, recvline, sizeof(recvline));
+    int n = 1;
+    int i = 1;
+    while((n > 0) && strcmp("\n", recvline))
+    {
+        n = get_line(client_sock, recvline, sizeof(recvline));
+        printf("Line %d: %s\n", i, recvline);
+        i++;
+    }
 
     // tcp 的返回
     response_200(client_sock, sendline);
