@@ -9,3 +9,5 @@ typedef struct _request {
     char *body;
 } REQUEST;
 #endif
+
+void construct_request(int sock);

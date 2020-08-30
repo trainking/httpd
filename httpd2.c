@@ -68,24 +68,12 @@ int startup(u_short *port)
 void accept_request(void *arg)
 {
     int client_sock = *(int*)arg;
-    fd_set rset;    // IO检查读
-    int maxfpl;     // 最大可读socket+1
-    char sendline[1024], recvline[1024];   // 请求缓存区
-    FD_ZERO(&rset);
-    FD_SET(client_sock, &rset);
-    maxfpl = client_sock + 1;
-    select(maxfpl, &rset, NULL, NULL, NULL);
-    // TODO 读取客户端发送的数据 解析http报文
-    int n = 1;
-    int i = 1;
-    while((n > 0) && strcmp("\n", recvline))
-    {
-        n = get_line(client_sock, recvline, sizeof(recvline));
-        printf("Line %d: %s\n", i, recvline);
-        i++;
-    }
 
-    // tcp 的返回
+    // 构造请求结构
+    construct_request(client_sock);
+
+    char sendline[1024];
+    // 返回
     response_200(client_sock, sendline);
     close(client_sock);
 }
