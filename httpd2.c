@@ -8,12 +8,12 @@
 #include <unistd.h>
 #include <pthread.h>
 #include "response.h"
+#include "request.h"
 
 /*函数声明*/
 void error_die(const char *sc);
 int startup(u_short *port);
 void accept_request(void *arg);
-int get_line(int sock, char *buf, int size);
 
 /*错误退出，输出一条错误信息*/
 void error_die(const char *sc)
@@ -88,39 +88,6 @@ void accept_request(void *arg)
     // tcp 的返回
     response_200(client_sock, sendline);
     close(client_sock);
-}
-
-// 读取一行的数据
-int get_line(int sock, char *buf, int size)
-{
-    int i = 0;
-    char c = '\0';
-    int n;
-
-    while ((i < size - 1) && (c != '\n'))
-    {
-        n = recv(sock, &c, 1, 0);
-        /* DEBUG printf("%02X\n", c); */
-        if (n > 0)
-        {
-            if (c == '\r')
-            {
-                n = recv(sock, &c, 1, MSG_PEEK);
-                /* DEBUG printf("%02X\n", c); */
-                if ((n > 0) && (c == '\n'))
-                    recv(sock, &c, 1, 0);
-                else
-                    c = '\n';
-            }
-            buf[i] = c;
-            i++;
-        }
-        else
-            c = '\n';
-    }
-    buf[i] = '\0';
-
-    return(i);
 }
 
 /*

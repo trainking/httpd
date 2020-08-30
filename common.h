@@ -14,3 +14,5 @@
 //     char *value;
 // } HENTITY;
 // #endif
+
+int get_line(int sock, char *buf, int size);

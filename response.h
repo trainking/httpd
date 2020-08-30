@@ -4,7 +4,7 @@
 
 #ifndef _RESPONSE_H_
 #define _RESPONSE_H_
-typedef struct response {
+typedef struct _response {
     int code;
     char *header;   // 先假设有10个头
     char *body;
