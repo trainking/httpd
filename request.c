@@ -13,9 +13,10 @@ void construct_request(int sock)
     int maxfpl;   // 最大可读socket+1
     char buff[1024];  // 缓存区
     char method[7];  // 请求方法 最长的请求方法是DELETE+1 = 7
+    char path[512];  // 请求路由
+    char query[512];  // 请求参数
     size_t i;
-    int n = 1;
-    
+
     // select IO检查
     FD_ZERO(&rset);
     FD_SET(sock, &rset);
@@ -32,6 +33,34 @@ void construct_request(int sock)
     // 1.1 获取请求方法
     method[i] = '\0';
     strcpy(r.method, method);
-    printf("method: %s\n", r.method);
-    // 1.2 获取协议版本
+    printf("i: %d method: %s\n", (int)i, r.method);
+    printf("buff: %s\n", buff);
+    // 1.2 请求路径（路由）
+    i++;
+    int _qflag = 0;
+    int _n =0 ;
+    int _p = 0;
+    while(!ISspace(buff[i]) && (i < sizeof(buff) - 1))
+    {
+        printf("c-- %c", buff[i]);
+        if (buff[i] == '?') {
+            _qflag = 1;
+            i++;     // 增一位忽略掉 ?
+        }
+
+        if (_qflag) {
+            query[_n] = buff[i];
+            _n ++;
+        } else {
+            path[_p] = buff[i];
+            _p++;
+        }
+        i++;
+    }
+    query[_n + 1] = '\0';
+    path[_p + 1] = '\0';
+    printf("\n");
+    printf("path: %s\n", path);
+    printf("query: %s\n", query);
+    printf("i: %d\n", (int)i);
 }
