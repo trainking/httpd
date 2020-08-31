@@ -4,10 +4,10 @@
 #ifndef __REQUEST_H_
 #define __REQUEST_H_
 typedef struct _request {
-    char *method;
+    char method[7];
     char *header;
     char *body;
-} REQUEST;
+} Request;
 #endif
 
 void construct_request(int sock);
