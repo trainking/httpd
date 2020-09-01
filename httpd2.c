@@ -68,13 +68,19 @@ int startup(u_short *port)
 void accept_request(void *arg)
 {
     int client_sock = *(int*)arg;
+    int status_code = 200;
+    int code = 0;
 
     // 构造请求结构
-    construct_request(client_sock);
+    code = construct_request(client_sock);
+    // 触发返回
+    if (code > 0) {
+        status_code = code;
+    }
 
     char sendline[1024];
     // 返回
-    response_200(client_sock, sendline);
+    response(status_code, client_sock, sendline);
     close(client_sock);
 }
 

@@ -6,7 +6,7 @@
 
 #define ISspace(x) isspace((int)(x))
 
-void construct_request(int sock)
+int construct_request(int sock)
 {
     Request r;
     fd_set rset;  // IO检查读
@@ -15,7 +15,9 @@ void construct_request(int sock)
     char method[7];  // 请求方法 最长的请求方法是DELETE+1 = 7
     char path[512];  // 请求路由
     char query[512];  // 请求参数
+    char version[10];
     size_t i;
+    int j,k;
 
     // select IO检查
     FD_ZERO(&rset);
@@ -38,29 +40,39 @@ void construct_request(int sock)
     // 1.2 请求路径（路由）
     i++;
     int _qflag = 0;
-    int _n =0 ;
-    int _p = 0;
+    // int _n =0 ;
+    // int _p = 0;
+    j = 0; k =0;
     while(!ISspace(buff[i]) && (i < sizeof(buff) - 1))
     {
-        printf("c-- %c", buff[i]);
         if (buff[i] == '?') {
             _qflag = 1;
             i++;     // 增一位忽略掉 ?
         }
 
         if (_qflag) {
-            query[_n] = buff[i];
-            _n ++;
+            query[j] = buff[i];
+            j ++;
         } else {
-            path[_p] = buff[i];
-            _p++;
+            path[k] = buff[i];
+            k++;
         }
         i++;
     }
-    query[_n + 1] = '\0';
-    path[_p + 1] = '\0';
+    query[j + 1] = '\0';
+    path[k + 1] = '\0';
     printf("\n");
     printf("path: %s\n", path);
     printf("query: %s\n", query);
     printf("i: %d\n", (int)i);
+    i++;
+    j = 0;
+    while(!ISspace(buff[i]) && (i < sizeof(buff) - 1))
+    {
+        version[j] = buff[i];
+        j ++;
+        i ++;
+    }
+    printf("version：%s\n", version);
+    return 0;
 }

@@ -10,4 +10,8 @@ typedef struct _request {
 } Request;
 #endif
 
-void construct_request(int sock);
+/*
+* 构造请求结构
+* 返回0构造正常，大于0则是响应码，做出响应
+*/
+int construct_request(int sock);
