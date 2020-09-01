@@ -74,5 +74,8 @@ int construct_request(int sock)
         i ++;
     }
     printf("version：%s\n", version);
+    // 验证协议版本
+    if (strcasecmp(version, "HTTP/1.1") != 0)
+        return 505;
     return 0;
 }

@@ -4,8 +4,8 @@
 #include <sys/socket.h>
 #include "response.h"
 
-void response_505(int client, char *result);
 void response_200(int client, char *result);
+void response_505(int client, char *result);
 
 void response_200(int client, char *result) {
     sprintf(result, "HTTP/1.1 200 OK\r\n");
