@@ -4,9 +4,39 @@
 #include <sys/socket.h>
 #include "response.h"
 
+void response_100(int client, char *result);
+void response_101(int client, char *result);
 void response_200(int client, char *result);
+void response_201(int client, char *result);
+void response_202(int client, char *result);
+void response_203(int client, char *result);
 void response_505(int client, char *result);
 
+// 100 Continue
+void response_100(int client, char *result) {
+    sprintf(result, "HTTP/1.1 100 Continue\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Content-type: text/html\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Continue\r\n");
+    send(client, result, strlen(result), 0);
+}
+
+// 101 Switching Protocols
+void response_100(int client, char *result) {
+    sprintf(result, "HTTP/1.1 101 Switching Protocols\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Content-type: text/html\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Switching Protocols\r\n");
+    send(client, result, strlen(result), 0);
+}
+
+// 200 OK
 void response_200(int client, char *result) {
     sprintf(result, "HTTP/1.1 200 OK\r\n");
     send(client, result, strlen(result), 0);
@@ -15,6 +45,42 @@ void response_200(int client, char *result) {
     sprintf(result, "\r\n");
     send(client, result, strlen(result), 0);
     sprintf(result, "ok\r\n");
+    send(client, result, strlen(result), 0);
+}
+
+// 201 Created 资源已经创建
+void response_201(int client, char *result) {
+    sprintf(result, "HTTP/1.1 201 OK\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Content-type: text/html\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Created\r\n");
+    send(client, result, strlen(result), 0);
+}
+
+// 202 Accepted 接受请求，但处理可能还未完成
+void response_202(int client, char *result) {
+    sprintf(result, "HTTP/1.1 202 Accepted\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Content-type: text/html\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Accepted\r\n");
+    send(client, result, strlen(result), 0);
+}
+
+// 203 Non-Authoritative Information
+void response_203(int client, char *result) {
+    sprintf(result, "HTTP/1.1 203 Non-Authoritative Information\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Content-type: text/html\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "\r\n");
+    send(client, result, strlen(result), 0);
+    sprintf(result, "Non-Authoritative Information\r\n");
     send(client, result, strlen(result), 0);
 }
 
