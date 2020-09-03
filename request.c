@@ -7,7 +7,7 @@
 
 #define ISspace(x) isspace((int)(x))
 
-void entity_query(Entity *en, char *query, size_t maxlen);
+int entity_query(Entity *en, char *query, size_t maxlen);
 
 int construct_request(int sock)
 {
@@ -72,8 +72,9 @@ int construct_request(int sock)
     strcpy(r.path, path);
     if (_qflag == 1) {
         eQuery = (Entity *) malloc(sizeof(Entity));
-        entity_query(eQuery, query, (size_t)(j + 1));
+        int _c = entity_query(eQuery, query, (size_t)(j + 1));
         // TODO 保存取出的参数
+        printf("_c: %d\n", _c);
     }
     i++;
     j = 0;
@@ -94,7 +95,7 @@ int construct_request(int sock)
 }
 
 // 取出请求参数
-void entity_query(Entity *en, char *query, size_t maxlen)
+int entity_query(Entity *en, char *query, size_t maxlen)
 {
     int n = 1;
     size_t i = 0;
@@ -117,7 +118,7 @@ void entity_query(Entity *en, char *query, size_t maxlen)
             i ++;
             k = 0;
         }
-        if (query[i] == '&') {
+        if (query[i] == '&' || query[i] == '\0') {
             v_flag = 0;
             name[j] = '\0';
             value[k] = '\0';
@@ -132,15 +133,6 @@ void entity_query(Entity *en, char *query, size_t maxlen)
             i ++;
             continue;
         }
-        if (query[i] == '\0') {
-            name[j] = '\0';
-            value[k] = '\0';
-            Entity _item;
-            strcpy(_item.name, name);
-            strcpy(_item.value, value);
-            en[n] = _item;
-            break;
-        }
         if (v_flag == 1) {
             value[k] = query[i];
             k ++;
@@ -151,4 +143,5 @@ void entity_query(Entity *en, char *query, size_t maxlen)
         
         i ++;
     }
+    return n;
 }
