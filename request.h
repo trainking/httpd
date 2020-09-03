@@ -5,6 +5,7 @@
 #define __REQUEST_H_
 typedef struct _request {
     char method[7];
+    char path[512];
     char *header;
     char *body;
 } Request;

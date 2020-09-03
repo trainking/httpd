@@ -2,9 +2,12 @@
 #include <string.h>
 #include <sys/select.h>
 #include <ctype.h>
+#include <malloc.h>
 #include "request.h"
 
 #define ISspace(x) isspace((int)(x))
+
+void entity_query(Entity *en, char *query, size_t maxlen);
 
 int construct_request(int sock)
 {
@@ -16,6 +19,8 @@ int construct_request(int sock)
     char path[512];  // 请求路由
     char query[512];  // 请求参数
     char version[10];
+    int rBody = 0;   // 是否读取body
+    Entity *eQuery;
     size_t i;
     int j,k;
 
@@ -35,13 +40,15 @@ int construct_request(int sock)
     // 1.1 获取请求方法
     method[i] = '\0';
     strcpy(r.method, method);
-    printf("i: %d method: %s\n", (int)i, r.method);
-    printf("buff: %s\n", buff);
+    if (strcasecmp(method, METHOD_POST) == 0)
+        rBody = 1;
+    if (strcasecmp(method, METHOD_PUT) == 0)
+        rBody = 1;
+    if (strcasecmp(method, METHOD_DELETE) == 0)
+        rBody = 1;
     // 1.2 请求路径（路由）
     i++;
     int _qflag = 0;
-    // int _n =0 ;
-    // int _p = 0;
     j = 0; k =0;
     while(!ISspace(buff[i]) && (i < sizeof(buff) - 1))
     {
@@ -61,10 +68,13 @@ int construct_request(int sock)
     }
     query[j + 1] = '\0';
     path[k + 1] = '\0';
-    printf("\n");
-    printf("path: %s\n", path);
-    printf("query: %s\n", query);
-    printf("i: %d\n", (int)i);
+    // 加入path
+    strcpy(r.path, path);
+    if (_qflag == 1) {
+        eQuery = (Entity *) malloc(sizeof(Entity));
+        entity_query(eQuery, query, (size_t)(j + 1));
+        // TODO 保存取出的参数
+    }
     i++;
     j = 0;
     while(!ISspace(buff[i]) && (i < sizeof(buff) - 1))
@@ -73,9 +83,72 @@ int construct_request(int sock)
         j ++;
         i ++;
     }
-    printf("version：%s\n", version);
     // 验证协议版本
     if (strcasecmp(version, "HTTP/1.1") != 0)
         return 505;
+    // 取出请求body
+    if (rBody) {
+        // TODO
+    }
     return 0;
+}
+
+// 取出请求参数
+void entity_query(Entity *en, char *query, size_t maxlen)
+{
+    int n = 1;
+    size_t i = 0;
+    while(!ISspace(query[i]) && (i < maxlen - 1)) {
+        if (query[i] == '&')
+            n ++;
+        i ++;
+    }
+    en = (Entity *) malloc(n * sizeof(Entity));
+    n = 0;
+    i = 0;
+    char name[128];
+    char value[128];
+    int v_flag = 0;
+    int j = 0;
+    int k = 0;
+    while(i < maxlen) {
+        if (query[i] == '=') {
+            v_flag = 1;
+            i ++;
+            k = 0;
+        }
+        if (query[i] == '&') {
+            v_flag = 0;
+            name[j] = '\0';
+            value[k] = '\0';
+            Entity _item;
+            strcpy(_item.name, name);
+            strcpy(_item.value, value);
+            en[n] = _item;
+            bzero(&name, sizeof(name));
+            bzero(&value, sizeof(value));
+            j = 0;
+            n ++;
+            i ++;
+            continue;
+        }
+        if (query[i] == '\0') {
+            name[j] = '\0';
+            value[k] = '\0';
+            Entity _item;
+            strcpy(_item.name, name);
+            strcpy(_item.value, value);
+            en[n] = _item;
+            break;
+        }
+        if (v_flag == 1) {
+            value[k] = query[i];
+            k ++;
+        } else {
+            name[j] = query[i];
+            j ++;
+        }
+        
+        i ++;
+    }
 }

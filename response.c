@@ -28,7 +28,7 @@ void response_100(int client, char *result) {
 }
 
 // 101 Switching Protocols
-void response_100(int client, char *result) {
+void response_101(int client, char *result) {
     sprintf(result, "HTTP/1.1 101 Switching Protocols\r\n");
     send(client, result, strlen(result), 0);
     sprintf(result, "Content-type: text/html\r\n");
