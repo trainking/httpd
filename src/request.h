@@ -6,7 +6,8 @@
 typedef struct _request {
     char method[7];
     char path[512];
-    char *header;
+    BOOL hasQuery;
+    Entity *query;
     char *body;
 } Request;
 #endif

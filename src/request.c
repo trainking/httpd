@@ -73,8 +73,13 @@ int construct_request(int sock)
     if (_qflag == 1) {
         eQuery = (Entity *) malloc(sizeof(Entity));
         int _c = entity_query(eQuery, query, (size_t)(j + 1));
-        // TODO 保存取出的参数
-        printf("_c: %d\n", _c);
+        // 加入query
+        if (_c > 0) {
+            r.hasQuery = true;
+            r.query = eQuery;
+        }
+    } else {
+        r.hasQuery = false;
     }
     i++;
     j = 0;

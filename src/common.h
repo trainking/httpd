@@ -7,6 +7,14 @@
 #define METHOD_OPTIONS  "OPTIONS"
 #define METHOD_DELETE "DELETE"
 
+#ifndef _BOOL_
+#define _BOOL_
+typedef int BOOL;
+#endif
+
+#define true 1;
+#define false 0;
+
 #ifndef _ENTITY_E_
 #define _ENTITY_E_
 typedef struct _entity {
