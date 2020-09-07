@@ -135,7 +135,12 @@ void response_505(int client, char *result) {
     send(client, result, strlen(result), 0);
 }
 
-// 构造返回
+/*
+* 构造返回报文
+* @param int status 状态码
+* @param int client 客户端的socket描述符
+* @param char *result 需要输出的内容
+*/
 void response(int status, int client, char *result)
 {
     switch(status) {

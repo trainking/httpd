@@ -1,7 +1,13 @@
 #include <sys/socket.h>
 #include "include/common.h"
 
-// 读取一行的数据
+/*
+* 从socket中读取http报文的一行
+* @param int sock socket描述符
+* @param char *buf 读取结果缓存区
+* @param int size buf的空间大小
+* @return int 读取的内容长度
+*/
 int get_line(int sock, char *buf, int size)
 {
     int i = 0;

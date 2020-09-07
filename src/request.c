@@ -9,6 +9,11 @@
 
 int entity_query(Entity *en, char *query, size_t maxlen);
 
+/*
+* 构造请求结构体
+* @param int sock socket描述符
+* @return 
+*/
 int construct_request(int sock)
 {
     Request r;
@@ -99,7 +104,13 @@ int construct_request(int sock)
     return 0;
 }
 
-// 取出请求参数
+/*
+* 解析query参数
+* @param Entity *en Entity的数组指针，解析好的请求参数
+* @param char *query query参数的数组指针
+* @param size_t maxlen query的内容长度
+* @return int 放回en的内容长度
+*/
 int entity_query(Entity *en, char *query, size_t maxlen)
 {
     int n = 1;
@@ -150,3 +161,4 @@ int entity_query(Entity *en, char *query, size_t maxlen)
     }
     return n;
 }
+

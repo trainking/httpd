@@ -15,7 +15,10 @@ void error_die(const char *sc);
 int startup(u_short *port);
 void accept_request(void *arg);
 
-/*错误退出，输出一条错误信息*/
+/*
+* 错误退出，输出一条错误信息
+* @param char *sc 消息内容
+*/
 void error_die(const char *sc)
 {
     perror(sc);
@@ -25,6 +28,8 @@ void error_die(const char *sc)
 /*
 * 启动http服务
 * TCP服务器启动函数过程：socket() -> bind() -> listen() -> accept() -> 阻塞到客户端请求到来
+* @param u_short *port 端口
+* @return int 服务端socket描述符
 */
 int startup(u_short *port)
 {
@@ -64,7 +69,10 @@ int startup(u_short *port)
     return (httpd);
 }
 
-// 处理请求
+/*
+* 处理请求入口
+* @param void *arg 参数，使用Pthread，(void *)类型需要内部强转
+*/
 void accept_request(void *arg)
 {
     int client_sock = *(int*)arg;
