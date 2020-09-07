@@ -1,5 +1,5 @@
 #include <sys/socket.h>
-#include "common.h"
+#include "include/common.h"
 
 // 读取一行的数据
 int get_line(int sock, char *buf, int size)

@@ -7,8 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "response.h"
-#include "request.h"
+#include "include/response.h"
+#include "include/request.h"
 
 /*函数声明*/
 void error_die(const char *sc);
