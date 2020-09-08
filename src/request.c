@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
 #include <ctype.h>
@@ -27,6 +28,7 @@ int construct_request(int sock)
     char query[512];  // 请求参数
     char version[10];
     int rBody = 0;   // 是否读取body
+    int content_length = -1;  // body长度
     Entity *eQuery;
     size_t i;
     int j,k;
@@ -107,8 +109,12 @@ int construct_request(int sock)
     {
         Entity* _en = (Entity*)malloc(sizeof(Entity));
         if (entity_header(_en, buff, (size_t)(numchars + 1))) {
-            // TODO 检查各项header
-            printf("Entity-name:%s，value:%s\n", _en->name, _en->value);
+            // 检查各项header
+            //printf("Entity-name:%s，value:%s\n", _en->name, _en->value);
+            if (strcasecmp(_en->name, "Content-Length") == 0) {
+                // body内容长度
+                content_length = atoi(_en->value);
+            }
         }
         numchars = get_line(sock, buff, sizeof(buff));
     }
