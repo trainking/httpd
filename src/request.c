@@ -119,7 +119,7 @@ int construct_request(int sock)
         numchars = get_line(sock, buff, sizeof(buff));
     }
     // 3.1 取出请求body
-    if (rBody) {
+    if (rBody && content_length > 0) {
         // TODO
     }
     return 0;
