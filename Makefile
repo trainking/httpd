@@ -1,6 +1,7 @@
 CC = gcc
 CFLAGS = -g -W -Wall
 LIBS = -lpthread
+$(shell mkdir -p out/)
 httpd: out/httpd.o out/response.o out/request.o out/common.o
 	$(CC) $(LIBS) out/httpd.o out/response.o out/request.o out/common.o -o httpd
 out/httpd.o: src/httpd.c
