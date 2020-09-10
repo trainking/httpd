@@ -4,6 +4,10 @@
 #include <sys/socket.h>
 #include "include/response.h"
 
+#define CASE_MSG(code, m)\
+    case code:\
+        msg = m;\
+        break
 
 /*
 * 构造返回报文
@@ -15,129 +19,47 @@ void response(int status, int client, char *result)
 {
     char* msg = "\0";
     switch(status) {
-        case 100:
-            msg = "Continue";
-            break;
-        case 101:
-            msg = "Switching Protocols";
-            break;
-        case 200:
-            msg = "ok";
-            break;
-        case 201:
-            msg = "Created";
-            break;
-        case 202:
-            msg = "Accepted";
-            break;
-        case 203:
-            msg = "Non-Authoritative Information";
-            break;
-        case 204:
-            msg = "No Content";
-            break;
-        case 205:
-            msg = "Reset Content";
-            break;
-        case 206:
-            msg = "Partial Content";
-            break;
-        case 300:
-            msg = "Multiple Choices";
-            break;
-        case 301:
-            msg = "Moved Permanently";
-            break;
-        case 302:
-            msg = "Found";
-            break;
-        case 303:
-            msg = "See Other";
-            break;
-        case 304:
-            msg = "Not Modified";
-            break;
-        case 305:
-            msg = "Use Proxy";
-            break;
-        case 306:
-            msg = "Unused";
-            break;
-        case 307:
-            msg = "Temporary Redirect";
-            break;
-        case 400:
-            msg = "Bad Request";
-            break;
-        case 401:
-            msg = "Unauthorized";
-            break;
-        case 402:
-            msg = "Payment Required";
-            break;
-        case 403:
-            msg = "Forbidden";
-            break;
-        case 404:
-            msg = "Not Found";
-            break;
-        case 405:
-            msg = "Method Not Allowed";
-            break;
-        case 406:
-            msg = "Not Acceptable";
-            break;
-        case 407:
-            msg = "Proxy Authentication Required";
-            break;
-        case 408:
-            msg = "Request Timeout";
-            break;
-        case 409:
-            msg = "Conflict";
-            break;
-        case 410:
-            msg = "Gone";
-            break;
-        case 411:
-            msg = "Length Required";
-            break;
-        case 412:
-            msg = "Precondition Failed";
-            break;
-        case 413:
-            msg = "Request Entity Too Large";
-            break;
-        case 414:
-            msg = "Request-URI Too Long";
-            break;
-        case 415:
-            msg = "Unsupported Media Type";
-            break;
-        case 416:
-            msg = "Requested Range Not Satisfiable";
-            break;
-        case 417:
-            msg = "Expectation Failed";
-            break;
-        case 500:
-            msg = "Internal Server Error";
-            break;
-        case 501:
-            msg = "Not Implemented";
-            break;
-        case 502:
-            msg = "Bad Gateway";
-            break;
-        case 503:
-            msg = "Service Unavailable";
-            break;
-        case 504:
-            msg = "Gateway Timeout";
-            break;
-        case 505:
-            msg = "HTTP Version Not Supported";
-            break;
+        CASE_MSG(100, "Continue");
+        CASE_MSG(101, "Switching Protocols");
+        CASE_MSG(200, "ok");
+        CASE_MSG(201, "Created");
+        CASE_MSG(202, "Accepted");
+        CASE_MSG(203, "Non-Authoritative Information");
+        CASE_MSG(204, "No Content");
+        CASE_MSG(205, "Reset Content");
+        CASE_MSG(206, "Partial Content");
+        CASE_MSG(300, "Multiple Choices");
+        CASE_MSG(301, "Moved Permanently");
+        CASE_MSG(302, "Found");
+        CASE_MSG(303, "See Other");
+        CASE_MSG(304, "Not Modified");
+        CASE_MSG(305, "Use Proxy");
+        CASE_MSG(306, "Unused");
+        CASE_MSG(307, "Temporary Redirect");
+        CASE_MSG(400, "Bad Request");
+        CASE_MSG(401, "Unauthorized");
+        CASE_MSG(402, "Payment Required");
+        CASE_MSG(403, "Forbidden");
+        CASE_MSG(404, "Not Found");
+        CASE_MSG(405, "Method Not Allowed");
+        CASE_MSG(406, "Not Acceptable");
+        CASE_MSG(407, "Proxy Authentication Required");
+        CASE_MSG(408, "Request Timeout");
+        CASE_MSG(409, "Conflict");
+        CASE_MSG(410, "Gone");
+        CASE_MSG(411, "Length Required");
+        CASE_MSG(412, "Precondition Failed");
+        CASE_MSG(413, "Request Entity Too Large");
+        CASE_MSG(414, "Request-URI Too Long");
+        CASE_MSG(415, "Unsupported Media Type");
+        CASE_MSG(416, "Requested Range Not Satisfiable");
+        CASE_MSG(417, "Expectation Failed");
+        CASE_MSG(500, "Internal Server Error");
+        CASE_MSG(501, "Not Implemented");
+        CASE_MSG(502, "Bad Gateway");
+        CASE_MSG(503, "Service Unavailable");
+        CASE_MSG(504, "Gateway Timeout");
+        CASE_MSG(505, "HTTP Version Not Supported");
     }
 
     sprintf(result, "HTTP/1.1 %d %s\r\n", status, msg);
