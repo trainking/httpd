@@ -111,6 +111,7 @@ int construct_request(int sock)
         if (entity_header(_en, buff, (size_t)(numchars + 1))) {
             // 检查各项header
             //printf("Entity-name:%s，value:%s\n", _en->name, _en->value);
+            // TODO 检查Content-Type, 返回415
             if (strcasecmp(_en->name, "Content-Length") == 0) {
                 // body内容长度
                 content_length = atoi(_en->value);
@@ -120,7 +121,13 @@ int construct_request(int sock)
     }
     // 3.1 取出请求body
     if (rBody && content_length > 0) {
-        // TODO
+        numchars = get_line(sock, buff, sizeof(buff));
+        while ((numchars) > 0 && strcmp("\n", buff) != 0)
+        {
+            // TODO 解析器插入
+            printf("body: %s\n", buff);
+            numchars = get_line(sock, buff, sizeof(buff));
+        }
     }
     return 0;
 }
