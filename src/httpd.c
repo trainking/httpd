@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
 #include "include/response.h"
 #include "include/request.h"
 
@@ -14,6 +15,45 @@
 void error_die(const char *sc);
 int startup(u_short *port);
 void accept_request(void *arg);
+void recv_end(int sock);
+
+/*
+* 清空socket的缓存区
+* @param int sock 客户端socket
+*/
+void recv_end(int sock)
+{
+    BOOL rs = true;
+    int bufflen;
+    char buf[1024];
+    while (rs)
+    {
+        bufflen = recv(sock, buf, sizeof(buf), 0);
+        if (bufflen < 0) {
+            if (errno == EAGAIN) {
+                break;
+            }
+            else
+            {
+                return;
+            }
+        }
+        else if (bufflen == 0) {
+            return;
+        }
+        else
+        {
+            if (bufflen != sizeof(buf)) {
+                rs = false;
+            }
+            else
+            {
+                rs = true;
+            }
+        }
+    }
+    
+}
 
 /*
 * 错误退出，输出一条错误信息
@@ -81,6 +121,7 @@ void accept_request(void *arg)
 
     // 构造请求结构
     code = construct_request(client_sock);
+    recv_end(client_sock);
     // 触发返回
     if (code > 0) {
         status_code = code;
