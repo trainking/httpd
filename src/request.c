@@ -110,8 +110,11 @@ int construct_request(int sock)
         Entity* _en = (Entity*)malloc(sizeof(Entity));
         if (entity_header(_en, buff, (size_t)(numchars + 1))) {
             // 检查各项header
-            //printf("Entity-name:%s，value:%s\n", _en->name, _en->value);
-            // TODO 检查Content-Type, 返回415
+            printf("Entity-name:%s，value:%s\n", _en->name, _en->value);
+            // 检查Content-Type, 返回415，只支持application/x-www-form-urlencoded
+            if (strcasecmp(_en->name, "Content-Type") == 0 && strcasecmp(_en->value, "application/x-www-form-urlencoded") != 0) {
+                return 415;
+            }
             if (strcasecmp(_en->name, "Content-Length") == 0) {
                 // body内容长度
                 content_length = atoi(_en->value);
