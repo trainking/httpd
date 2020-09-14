@@ -8,7 +8,7 @@ typedef struct _request {
     char path[512];
     BOOL hasQuery;
     Entity *query;
-    char *body;
+    Entity *body;
 } Request;
 #endif
 

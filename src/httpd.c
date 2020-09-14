@@ -121,10 +121,10 @@ void accept_request(void *arg)
 
     // 构造请求结构
     code = construct_request(client_sock);
-    recv_end(client_sock);
     // 触发返回
     if (code > 0) {
         status_code = code;
+        recv_end(client_sock);
     }
 
     char sendline[1024];

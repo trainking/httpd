@@ -4,6 +4,7 @@
 #include <sys/select.h>
 #include <ctype.h>
 #include <malloc.h>
+#include <sys/socket.h>
 #include "include/request.h"
 
 #define ISspace(x) isspace((int)(x))
@@ -29,7 +30,8 @@ int construct_request(int sock)
     char version[10];
     int rBody = 0;   // 是否读取body
     int content_length = -1;  // body长度
-    Entity *eQuery;
+    Entity* eQuery;
+    Entity* eBody;
     size_t i;
     int j,k;
 
@@ -110,7 +112,6 @@ int construct_request(int sock)
         Entity* _en = (Entity*)malloc(sizeof(Entity));
         if (entity_header(_en, buff, (size_t)(numchars + 1))) {
             // 检查各项header
-            printf("Entity-name:%s，value:%s\n", _en->name, _en->value);
             // 检查Content-Type, 返回415，只支持application/x-www-form-urlencoded
             if (strcasecmp(_en->name, "Content-Type") == 0 && strcasecmp(_en->value, "application/x-www-form-urlencoded") != 0) {
                 return 415;
@@ -124,19 +125,17 @@ int construct_request(int sock)
     }
     // 3.1 取出请求body
     if (rBody && content_length > 0) {
-        numchars = get_line(sock, buff, sizeof(buff));
-        while ((numchars) > 0 && strcmp("\n", buff) != 0)
-        {
-            // TODO 解析器插入
-            printf("body: %s\n", buff);
-            numchars = get_line(sock, buff, sizeof(buff));
-        }
+        numchars = get_line(sock, buff, content_length + 1);
+        // -- 解析器插入
+        eBody = (Entity*)malloc(sizeof(Entity));
+        entity_query(eBody, buff, numchars + 1);
+        r.body = eBody;
     }
     return 0;
 }
 
 /*
-* 解析query参数
+* 解析query参数（解析x-www-from-urlcode请求body）
 * @param Entity *en Entity的数组指针，解析好的请求参数
 * @param char *query query参数的数组指针
 * @param size_t maxlen query的内容长度
