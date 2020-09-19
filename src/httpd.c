@@ -119,6 +119,11 @@ void accept_request(void *arg)
     int status_code = 200;
     int code = 0;
 
+    // 设置recv的超时时间
+    struct timeval timeout = { 3, 0 };
+    if (setsockopt(client_sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) != 0)
+        error_die("setsockopt Fail!");
+
     // 构造请求结构
     code = construct_request(client_sock);
     // 触发返回
