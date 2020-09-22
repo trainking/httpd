@@ -13,11 +13,12 @@
 * 构造返回报文
 * @param int status 状态码
 * @param int client 客户端的socket描述符
-* @param char *result 需要输出的内容
+* @param char *body 需要输出的内容
 */
-void response(int status, int client, char *result)
+void response(int status, int client, char *body)
 {
     char* msg = "\0";
+    char result[1024];  // 输出缓存区
     switch(status) {
         CASE_MSG(100, "Continue");
         CASE_MSG(101, "Switching Protocols");
@@ -68,6 +69,11 @@ void response(int status, int client, char *result)
     send(client, result, strlen(result), 0);
     sprintf(result, "\r\n");
     send(client, result, strlen(result), 0);
-    sprintf(result, "%s\r\n", msg);
+    // 20x 返回正常结果
+    if (status >= 200 && status <= 206) {
+        sprintf(result, "%s\r\n", body);
+    } else {
+        sprintf(result, "%s\r\n", msg);
+    }
     send(client, result, strlen(result), 0);
 }

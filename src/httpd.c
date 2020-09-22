@@ -132,9 +132,10 @@ void accept_request(void *arg)
         recv_end(client_sock);
     }
 
-    char sendline[1024];
+    // TODO 构造body
+    char* body = "hello, world!";
     // 返回
-    response(status_code, client_sock, sendline);
+    response(status_code, client_sock, body);
     close(client_sock);
 }
 
