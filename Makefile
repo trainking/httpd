@@ -8,7 +8,7 @@ CFLAGS = -g -W -Wall
 LIBS = -lpthread
 
 httpd: $(OUT_PATH)/httpd.o $(OUT_PATH)/response.o $(OUT_PATH)/request.o $(OUT_PATH)/common.o
-	$(CC) $(LIBS) $(OUT_PATH)/httpd.o $(OUT_PATH)/response.o $(OUT_PATH)/request.o $(OUT_PATH)/common.o -o httpd
+	$(CC) $(CFLAGS) $(OUT_PATH)/httpd.o $(OUT_PATH)/response.o $(OUT_PATH)/request.o $(OUT_PATH)/common.o -o httpd $(LIBS)
 $(OUT_PATH)/httpd.o: $(SRC_PATH)/httpd.c
 	$(CC) $(CFLAGS) $(LIBS) -c $(SRC_PATH)/httpd.c -o $(OUT_PATH)/httpd.o
 $(OUT_PATH)/response.o: $(SRC_PATH)/response.c
