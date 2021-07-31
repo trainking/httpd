@@ -17,6 +17,7 @@ int startup(u_short *port);
 void accept_request(void *arg);
 void recv_end(int sock);
 void start();
+void help();
 
 // 版本号
 const char* VERSION = "0.0.1";
@@ -168,6 +169,14 @@ void start()
     close(server_sock);
 }
 
+// 帮助文档
+void help()
+{
+    printf("httpd is a simple httpd server.Browse: https://github.com/trainking/httpd\n");
+    printf("\t --version: Get httpd version.\n");
+    printf("May the force be with you!\n");
+}
+
 /*
 * 主入口
 */
@@ -176,7 +185,7 @@ int main(int argc, char *argv[])
     int i;
     for (i = 1; i <argc; i++) {
         if (strcmp("--help", argv[i]) == 0) {
-            printf("httpd.0.1\n");
+            help();
             return 0;
         } else if (strcmp("--version", argv[i]) == 0) {
             printf("%s\n", VERSION);
