@@ -16,7 +16,7 @@ void error_die(const char *sc);
 int startup(u_short *port);
 void accept_request(void *arg);
 void recv_end(int sock);
-void start();
+void start(int p);
 void help();
 
 // 版本号
@@ -145,9 +145,9 @@ void accept_request(void *arg)
 }
 
 // 启动服务
-void start()
+void start(int p)
 {
-    u_short port = 4000;   // 服务器监听端口
+    u_short port = (u_short)p;   // 服务器监听端口
     int server_sock = -1;  // 服务器socket, 初始值为-1，区分返回结果的非0描述符
     int client_sock = -1;  // 获取的客户端socket描述符
     struct sockaddr_in client_name;   // 接收客户端协议等信息
@@ -156,7 +156,7 @@ void start()
 
     // 1. 建立服务器socket
     server_sock = startup(&port);
-    printf("*************************\n  httpd running!\n  Listen port%d\n*************************\n", port);
+    printf("*************************\n  httpd running!\n  Listen port:%d\n*************************\n", port);
     // 2. accept
     while(1) {
         client_sock = accept(server_sock, (struct sockaddr *)&client_name, &client_name_len);
@@ -174,6 +174,7 @@ void help()
 {
     printf("httpd is a simple httpd server.Browse: https://github.com/trainking/httpd\n");
     printf("\t --version: Get httpd version.\n");
+    printf("\t --help: Get httpd help.\n");
     printf("May the force be with you!\n");
 }
 
@@ -183,6 +184,7 @@ void help()
 int main(int argc, char *argv[])
 {
     int i;
+    int port;
     for (i = 1; i <argc; i++) {
         if (strcmp("--help", argv[i]) == 0) {
             help();
@@ -190,8 +192,12 @@ int main(int argc, char *argv[])
         } else if (strcmp("--version", argv[i]) == 0) {
             printf("%s\n", VERSION);
             return 0;
+        } else if (strcmp("-p", argv[i]) == 0) {
+            if (i + 1 < argc) {
+                port = atoi(argv[i + 1]);
+            }
         }
     }
-    start();
+    start(port);
     return 0;
 }
