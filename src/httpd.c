@@ -175,6 +175,7 @@ void help()
     printf("httpd is a simple httpd server.Browse: https://github.com/trainking/httpd\n");
     printf("\t --version: Get httpd version.\n");
     printf("\t --help: Get httpd help.\n");
+    printf("\t -p: Set httpd listen port.\n");
     printf("May the force be with you!\n");
 }
 
