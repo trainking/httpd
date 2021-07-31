@@ -5,3 +5,4 @@ httpd
 .vscode/
 out/
 .vs/
+bin/
