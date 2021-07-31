@@ -20,4 +20,6 @@ $(OUT_PATH)/request.o: $(SRC_PATH)/request.c
 $(OUT_PATH)/common.o: $(SRC_PATH)/common.c
 	$(CC) $(CFLAGS) -c $(SRC_PATH)/common.c -o $(OUT_PATH)/common.o
 clean:
-	rm -rf $(OUT_PATH)/ && rm -f (BIN_PATH)/httpd
+	rm -rf $(OUT_PATH)/ && rm -f $(BIN_PATH)/httpd
+test:
+	$(BIN_PATH)/httpd --version

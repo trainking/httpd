@@ -16,6 +16,10 @@ void error_die(const char *sc);
 int startup(u_short *port);
 void accept_request(void *arg);
 void recv_end(int sock);
+void start();
+
+// 版本号
+const char* VERSION = "0.0.1";
 
 /*
 * 清空socket的缓存区
@@ -139,10 +143,8 @@ void accept_request(void *arg)
     close(client_sock);
 }
 
-/*
-* 主入口
-*/
-int main(void)
+// 启动服务
+void start()
 {
     u_short port = 4000;   // 服务器监听端口
     int server_sock = -1;  // 服务器socket, 初始值为-1，区分返回结果的非0描述符
@@ -164,5 +166,23 @@ int main(void)
             perror("pthread_create");
     }
     close(server_sock);
+}
+
+/*
+* 主入口
+*/
+int main(int argc, char *argv[])
+{
+    int i;
+    for (i = 1; i <argc; i++) {
+        if (strcmp("--help", argv[i]) == 0) {
+            printf("httpd.0.1\n");
+            return 0;
+        } else if (strcmp("--version", argv[i]) == 0) {
+            printf("%s\n", VERSION);
+            return 0;
+        }
+    }
+    start();
     return 0;
 }
