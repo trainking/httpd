@@ -11,4 +11,4 @@ typedef struct _response {
 } RESPONSE;
 #endif
 
-void response(int status, int client, char *body);
+int response(int status, int client);

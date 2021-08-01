@@ -136,11 +136,8 @@ void accept_request(void *arg)
         status_code = code;
         recv_end(client_sock);
     }
-
-    // TODO 构造body
-    char* body = "hello, world!";
     // 返回
-    response(status_code, client_sock, body);
+    response(status_code, client_sock);
     close(client_sock);
 }
 
