@@ -7,7 +7,7 @@ $(shell mkdir -p $(BIN_PATH)/)
 SRC_PATH = src
 CC = gcc
 CFLAGS = -g -W -Wall
-LIBS = -lpthread
+LIBS = -lpthread -lm
 
 httpd: $(OUT_PATH)/httpd.o $(OUT_PATH)/response.o $(OUT_PATH)/request.o $(OUT_PATH)/common.o
 	$(CC) $(CFLAGS) $(OUT_PATH)/httpd.o $(OUT_PATH)/response.o $(OUT_PATH)/request.o $(OUT_PATH)/common.o -o $(BIN_PATH)/httpd $(LIBS)

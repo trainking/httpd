@@ -24,3 +24,4 @@ typedef struct _entity {
 #endif
 
 int get_line(int sock, char *buf, int size);
+u_int32_t ipv4_to_int(char *ip);

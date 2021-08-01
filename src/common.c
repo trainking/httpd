@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include <sys/socket.h>
 #include "include/common.h"
 
@@ -38,4 +42,33 @@ int get_line(int sock, char *buf, int size)
     buf[i] = '\0';
 
     return(i);
+}
+
+u_int32_t ipv4_to_int(char *ip)
+{
+    char str_ip_index[4]={'\0'};
+	unsigned int ip_int,ip_add=0;
+    int j =0,a=3;
+    for(unsigned int i =0;i<=strlen(ip);i++) 
+    {
+        if (ip[i]=='\0'||ip[i]=='.')
+		{			
+			ip_int =atoi(str_ip_index);	
+			if (ip_int>255)
+			{
+				printf("IP地址有误\n");
+				system("pause");
+				return 0;				
+			}
+ 
+			ip_add+=(ip_int*((unsigned int)pow(256.0,a)));			
+			a--;
+			memset(str_ip_index,0,sizeof(str_ip_index));
+			j=0;
+			continue;
+		}
+        str_ip_index[j]=ip[i];
+        j++;
+    }
+    return (u_int32_t)ip_add;
 }

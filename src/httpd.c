@@ -8,19 +8,21 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <errno.h>
+#include "include/common.h"
 #include "include/response.h"
 #include "include/request.h"
 
 /*函数声明*/
 void error_die(const char *sc);
-int startup(u_short *port);
+int startup(u_short *port,u_int32_t ip);
 void accept_request(void *arg);
 void recv_end(int sock);
-void start(int p);
+void start(int p,char *ipstr);
 void help();
 
 // 版本号
 const char* VERSION = "0.0.1";
+const int DEFAULT_PORT = 4000;
 
 /*
 * 清空socket的缓存区
@@ -76,7 +78,7 @@ void error_die(const char *sc)
 * @param u_short *port 端口
 * @return int 服务端socket描述符
 */
-int startup(u_short *port)
+int startup(u_short *port,u_int32_t ip)
 {
     int httpd = 0;   // sockfd 套接字描述符
     struct sockaddr_in name;  // 协议地址结构体
@@ -90,7 +92,8 @@ int startup(u_short *port)
     bzero(&name, sizeof(name));
     name.sin_family = AF_INET;   // 协议，指定IPV4
     name.sin_port = htons(*port);  // 端口， htons转换为大端序
-    name.sin_addr.s_addr = htonl(INADDR_ANY);  // 地址，INADDR_ANY = 0.0.0.0
+    // name.sin_addr.s_addr = htonl(INADDR_ANY);  // 地址，INADDR_ANY = 0.0.0.0
+    name.sin_addr.s_addr = htonl(ip);
     if (bind(httpd, (struct sockaddr *)&name, sizeof(name)) < 0)  // bind 成功返回0，失败-1
         error_die("bind Fail!");
     // 2.2 以port=0 bind的地址会动态分配一个端口号，通过getsockname取出来
@@ -142,7 +145,7 @@ void accept_request(void *arg)
 }
 
 // 启动服务
-void start(int p)
+void start(int p,char *ipstr)
 {
     u_short port = (u_short)p;   // 服务器监听端口
     int server_sock = -1;  // 服务器socket, 初始值为-1，区分返回结果的非0描述符
@@ -152,8 +155,8 @@ void start(int p)
     pthread_t newthread;
 
     // 1. 建立服务器socket
-    server_sock = startup(&port);
-    printf("*************************\n  httpd running!\n  Listen port:%d\n*************************\n", port);
+    server_sock = startup(&port, ipv4_to_int(ipstr));
+    printf("*************************\n  httpd running!\n  Listen %s:%d\n*************************\n", ipstr, port);
     // 2. accept
     while(1) {
         client_sock = accept(server_sock, (struct sockaddr *)&client_name, &client_name_len);
@@ -182,7 +185,8 @@ void help()
 int main(int argc, char *argv[])
 {
     int i;
-    int port;
+    int port = DEFAULT_PORT;
+    char* ipstr = "0.0.0.0";
     for (i = 1; i <argc; i++) {
         if (strcmp("--help", argv[i]) == 0) {
             help();
@@ -194,8 +198,12 @@ int main(int argc, char *argv[])
             if (i + 1 < argc) {
                 port = atoi(argv[i + 1]);
             }
+        } else if (strcmp("-h", argv[i]) == 0 ) {
+            if (i + 1 < argc) {
+                ipstr = argv[i+1];
+            }
         }
     }
-    start(port);
+    start(port, ipstr);
     return 0;
 }
