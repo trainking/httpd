@@ -2,7 +2,11 @@
 #include <strings.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/sendfile.h>
+#include <fcntl.h>
 #include "include/response.h"
+
+#define O_RDONLY 00 /*只读方式打开*/
 
 #define CASE_MSG(code, m)\
     case code:\
@@ -70,17 +74,15 @@ int response(int status, int client)
     send(client, result, strlen(result), 0);
     // 20x 返回正常结果
     if (status >= 200 && status <= 206) {
-        FILE *fp;
-        fp = fopen("html/index.html", "r");
-        if (fp == NULL) {
+        int fp;
+        fp = open("html/index.html", O_RDONLY);
+        if (fp == -1) {
             sprintf(result, "%s\r\n", "no centent");
             send(client, result, strlen(result), 0);
             return 0;
         }
-        while (fgets(result, 1024, fp) != NULL) {
-            send(client, result, strlen(result), 0);
-        }
-        fclose(fp);
+        // linux 2.1 引入
+        sendfile(client, fp, 0, 10 * 1024);
     } else {
         sprintf(result, "%s\r\n", msg);
         send(client, result, strlen(result), 0);
