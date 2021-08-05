@@ -5,6 +5,9 @@
 #include <sys/socket.h>
 #include "include/common.h"
 
+
+extern char* html_path;
+
 /*
 * 从socket中读取http报文的一行
 * @param int sock socket描述符
