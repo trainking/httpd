@@ -24,7 +24,6 @@ void help();
 const char* VERSION = "0.0.1";
 const int DEFAULT_PORT = 4000;
 
-char* html_path="html";
 
 /*
 * 清空socket的缓存区
@@ -204,11 +203,12 @@ int main(int argc, char *argv[])
             if (i + 1 < argc) {
                 ipstr = argv[i+1];
             }
-        } else if (strcmp("-path", argv[i]) == 0) {
-            if (i + 1 < argc) {
-                html_path = argv[i+1];
-            }
         }
+        // } else if (strcmp("-path", argv[i]) == 0) {
+        //     if (i + 1 < argc) {
+        //         html_path = argv[i+1];
+        //     }
+        // }
     }
     start(port, ipstr);
     return 0;

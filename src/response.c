@@ -76,7 +76,7 @@ int response(int status, int client)
     if (status >= 200 && status <= 206) {
         int fp;
         char full_path[1024];
-        sprintf(full_path,"%s/index.html", html_path);
+        sprintf(full_path,"%s/index.html", html_path());
         fp = open(full_path, O_RDONLY);
         if (fp == -1) {
             sprintf(result, "%s\r\n", "no centent");

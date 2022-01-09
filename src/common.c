@@ -6,8 +6,6 @@
 #include "include/common.h"
 
 
-extern char* html_path;
-
 /*
 * 从socket中读取http报文的一行
 * @param int sock socket描述符
@@ -74,4 +72,9 @@ u_int32_t ipv4_to_int(char *ip)
         j++;
     }
     return (u_int32_t)ip_add;
+}
+
+// html_path 返回路径地址
+char* html_path() {
+    return "html";
 }
